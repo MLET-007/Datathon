@@ -1,5 +1,8 @@
+import re
+from turtle import right
 import pandas as pd
 import numpy as np
+import glob
 
 from Scripts.functions_to_help import *
 
@@ -77,3 +80,45 @@ def create_count_userId_by_history(df, user_type, parte_treino):
     table = df_history_explode.groupby('history').agg(count_userId_by_page=('userId', 'nunique')).reset_index()
     
     table.to_parquet('./Dados/files/treino/Atributos/table_count_userId_by_page_treino_{0}_{1}.parquet'.format(parte_treino, str(user_type).replace(r"-", "")))
+    
+
+def create_flag_was_modified():
+    
+    BASE_PATH_TABLE_COUNT_USERID = "./Dados/files/treino/Atributos/table_count_userId_*.parquet"
+    BASE_PATH_ITENS = "./Dados/itens/itens/*.csv"
+    
+    
+    df_tables_count_id = {}
+
+    for full_path in glob.glob(BASE_PATH_TABLE_COUNT_USERID):
+        df = pd.read_parquet(full_path)
+        
+        match = re.search(r'parte(\d+)', full_path)
+        df_tables_count_id[match.group(0)] = df
+    
+    df_itens = {}
+    
+    for full_path in glob.glob(BASE_PATH_ITENS):
+        df = pd.read_csv(full_path)
+        
+        match = re.search(r'parte(\d+)', full_path)
+        df_itens[match.group(0)] = df
+    
+    
+    list_itens_parts = list(df_itens.keys())
+
+    list_tables_parts = list(df_tables_count_id.keys())
+    
+    
+    
+    for table_part in list_tables_parts:
+        list_df_left_join = []
+        for itens_part in list_itens_parts:
+            df_itens[itens_part]['is_modified'] = np.where(df_itens[itens_part]['issued'] == df_itens[itens_part]['modified'], 0, 1)
+            list_df_left_join.append(df_tables_count_id[table_part].merge(df_itens[itens_part][['page', 'is_modified']], left_on = 'history', right_on = 'page', how = 'left'))
+        
+        df_left_join = pd.concat(list_df_left_join, ignore_index=True)
+        df_left_join_grouped = df_left_join.groupby('history', as_index=False).first()
+    
+    
+        df_left_join_grouped[['history', 'is_modified']].to_parquet('./Dados/files/treino/Atributos/table_flag_is_modified_by_page_treino_{0}_Nonlogged.parquet'.format(table_part))
