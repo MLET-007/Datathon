@@ -66,11 +66,14 @@ id diff_accesso_medio
 
 def create_count_userId_by_history(df, user_type, parte_treino):
     
+    
     df_filtrado = df[df['userType'] == user_type]
     
     
     df_filtrado['history'] = df_filtrado['history'].str.split(',')
     
-    table = df_filtrado.groupby('history').agg(count_userId_by_page=('userId', 'nunique')).reset_index()
+    df_history_explode = df_filtrado.explode('history')
     
-    table.to_parquet('./Dados/files/treino/Atributos/table_count_userId_by_page_treino_{0}_{2}.parquet'.format(parte_treino, str(user_type).replace(r"-", "")))
+    table = df_history_explode.groupby('history').agg(count_userId_by_page=('userId', 'nunique')).reset_index()
+    
+    table.to_parquet('./Dados/files/treino/Atributos/table_count_userId_by_page_treino_{0}_{1}.parquet'.format(parte_treino, str(user_type).replace(r"-", "")))
