@@ -28,8 +28,6 @@ def create_attributes_count_mean(df, user_type, column_name, type_column, parte_
         
     table.to_parquet('./Dados/files/treino/Atributos/table_{0}_{1}_by_page_treino_{2}_{3}.parquet'.format(attribute_type, column_name, parte_treino, str(user_type).replace(r"-", "")))
 
-    
-
 def create_diff_time_attributes(df, user_type, data_column_name, timestamp_column_name,parte_treino):
         
     df_anonimo = df[df['userType'] == user_type]
@@ -75,4 +73,4 @@ def create_count_userId_by_history(df, user_type, parte_treino):
     
     table = df_filtrado.groupby('history').agg(count_userId_by_page=('userId', 'nunique')).reset_index()
     
-    table.to_parquet('./Dados/files/treino/Atributos/table_count_userId_by_page_treino_{1}_{2}.parquet'.format(parte_treino, str(user_type).replace(r"-", "")))
+    table.to_parquet('./Dados/files/treino/Atributos/table_count_userId_by_page_treino_{0}_{2}.parquet'.format(parte_treino, str(user_type).replace(r"-", "")))
