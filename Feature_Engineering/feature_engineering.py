@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import glob
 
+from scipy.stats import linregress
 from Scripts.functions_to_help import *
 
 def create_attributes_count_mean(df, user_type, column_name, type_column, parte_treino):
@@ -143,3 +144,43 @@ def create_count_days_by_page(df, user_type, parte_treino):
     table = df_explode.groupby('history').agg(qnt_dias=('dataHistory_day', 'nunique')).reset_index()
 
     table.to_parquet('./Dados/files/treino/Atributos/table_count_days_by_page_treino_{0}_{1}.parquet'.format(parte_treino, str(user_type).replace(r"-", "")))
+    
+    
+    
+
+
+def calcular_inclinacao(grupo, date_column, count_column):
+    # Converter dias para números (dias desde o primeiro dia)
+    dias = (grupo[date_column] - grupo[date_column].min()).dt.days
+    quantidades = grupo[count_column]
+    
+    # Calcular a regressão linear
+    slope, _, _, _, _ = linregress(dias, quantidades)
+    return slope
+
+def create_rate_by_day(df, user_type, parte_treino):
+    
+    df_filtrado = df[df['userType'] == user_type]
+    
+    df_filtrado['dataHistory'] = df_filtrado['timestampHistory'].apply(processar_timestamps)
+
+    df_filtrado['history'] = df_filtrado['history'].str.split(',')
+
+    df_filtrado['dataHistory'] = df_filtrado['dataHistory'].str.split(',')
+
+    df_explode = df_filtrado[['history', 'dataHistory']].apply(pd.Series.explode)
+
+    df_explode['dataHistory'] = pd.to_datetime(df_explode['dataHistory'], format = "%d/%m/%Y %H:%M")
+
+    df_explode['dataHistory_day'] = df_explode['dataHistory'].dt.date
+    
+    
+    table_page_by_day = df_explode.groupby(['history', 'dataHistory_day']).size().reset_index(name='qnt_dias')
+    
+    table_page_by_day.sort_values(by = ['history', 'dataHistory_day'])
+    
+    table_crescimento = table_page_by_day.groupby('history').apply(calcular_inclinacao).reset_index()
+    
+    table_crescimento.columns = ['history', 'taxa_crescimento_users']
+    
+    return [table_crescimento, table_page_by_day]
