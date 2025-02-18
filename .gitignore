@@ -1,0 +1,60 @@
+# ---------------------------------
+# 1) Arquivos/Pastas Python e Poetry
+# ---------------------------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+*.egg
+.env
+.venv/
+venv/
+ENV/
+env/
+
+poetry.lock
+
+# ---------------------------------
+# 2) IDEs e Configurações Locais
+# ---------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ---------------------------------
+# 3) Logs e Arquivos Temporários
+# ---------------------------------
+logs/
+*.log
+*.out
+*.tmp
+
+# ---------------------------------
+# 4) Dados Grandes e Modelos
+# ---------------------------------
+data/**/*.csv
+data/**/*.parquet
+models/*.pkl
+
+# ---------------------------------
+# 5) Build / Distribuição
+# ---------------------------------
+build/
+dist/
+*.wheel
+*.egg-info/
+
+# ---------------------------------
+# 6) Ferramentas e Coverage
+# ---------------------------------
+.coverage
+.coverage.*
+htmlcov/
+reports/
+pytest_cache/
+.cache/
