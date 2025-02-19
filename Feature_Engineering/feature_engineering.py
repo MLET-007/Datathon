@@ -191,7 +191,11 @@ def create_flag_was_modified():
         df_left_join_grouped[['history', 'is_modified']].to_parquet('./Dados/files/treino/Atributos/table_flag_is_modified_by_page_treino_{0}_Nonlogged.parquet'.format(table_part))
 
 
-def create_count_in_period(df, user_type, table_part):
+def create_count_in_period(df, user_type, table_part, flag_minutes):
+    
+    #df = df_train_files[part]
+    #user_type =  'Non-Logged'
+    #table_part = 'parte1'
     
     BASE_PATH_ITENS = "./Dados/itens/itens/*.csv"
     
@@ -214,6 +218,8 @@ def create_count_in_period(df, user_type, table_part):
         
         df['issued'] = pd.to_datetime(df['issued'])
         
+        df['issued_sem_fuso'] = df['issued'].dt.tz_localize(None)
+        
         match = re.search(r'parte(\d+)', full_path)
         df_itens[match.group(0)] = df
     
@@ -224,16 +230,28 @@ def create_count_in_period(df, user_type, table_part):
     for itens_part in list_itens_parts:
         
         
-        list_df_left_join.append(df_explode.merge(df_itens[itens_part][['page', 'issued']], left_on = 'history', right_on = 'page', how = 'left'))
+        list_df_left_join.append(df_explode.merge(df_itens[itens_part][['page', 'issued_sem_fuso']], left_on = 'history', right_on = 'page', how = 'left'))
     
     
     
     df_left_join = pd.concat(list_df_left_join, ignore_index=True)
     
+    if flag_minutes:
+        df_filtered = df_left_join[(df_left_join['dataHistory'] >= df_left_join['issued_sem_fuso']) &
+                                (df_left_join['dataHistory'] <= df_left_join['issued_sem_fuso'] + timedelta(minutes=15))]
+        
+        table = df_filtered.groupby('history').size().reset_index(name='count_in_15_minutes')
     
-    df_filtered = df_left_join[(df_left_join['dataHistory'] >= df_left_join['issued']) &
-                                (df_left_join['dataHistory'] <= df_left_join['issued'] + timedelta(days=1))]
+        table.sort_values(by = ['count_in_15_minutes'], ascending=False)
+        table.to_parquet('./Dados/files/treino/Atributos/table_count_page_users_in_15_minutes_treino_{0}_{1}.parquet'.format(table_part,str(user_type).replace(r"-", "")))
+    else:
+        df_filtered = df_left_join[(df_left_join['dataHistory'] >= df_left_join['issued_sem_fuso']) &
+                                (df_left_join['dataHistory'] <= df_left_join['issued_sem_fuso'] + timedelta(days=1))]
+        
+        table = df_filtered.groupby('history').size().reset_index(name='count_in_first_day')
+    
+        table.sort_values(by = ['count_in_first_day'], ascending=False)
+        table.to_parquet('./Dados/files/treino/Atributos/table_count_page_users_in_first_day_treino_{0}_{1}.parquet'.format(table_part,str(user_type).replace(r"-", "")))
+        
     
     
-    table = df_filtered.groupby('history').size().reset_index(name='count_in_first_day')
-    table.to_parquet('./Dados/files/treino/Atributos/table_count_page_users_in_first_day_treino_{0}_Nonlogged.parquet'.format(table_part))
