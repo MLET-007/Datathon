@@ -1,25 +1,26 @@
 [tool.poetry]
-name = "datathon v2"
+name = "datathon_recommendation"
 version = "0.1.0"
-description = "Datathon"
-authors = ["MLET-007"]
+description = "Projeto de recomendação content-based com fallback (Datathon)."
+authors = ["Seu Nome <seuemail@example.com>"]
+
+# Não colocar python aqui, e sim em [tool.poetry.dependencies]
 readme = "README.md"
+package-mode = false  # Desabilita instalação do projeto como pacote (opcional)
 
 [tool.poetry.dependencies]
-fastapi = "^0.95.0"
-uvicorn = "^0.21.1"
-pydantic = "^1.10"
-pandas = "^1.5"
-numpy = "^1.23"
-scikit-learn = "^1.1"
-scipy = "^1.10"
-torch = "^1.13.1"
-transformers = "^4.28.0"
-redis = "^4.5.3"
+python = "^3.10"
+flask = "^2.3"
+pandas = "^2.0"
+numpy = "^1.24"
+scikit-learn = "^1.2"
+uvicorn = "^0.22"
+gunicorn = "^20.1"
+pyarrow = "^12.0"  
 
-[tool.poetry.dev-dependencies]
-pytest = "^7.2"
-black = "^23.3"
+[poetry.group.dev.dependencies]
+pytest = "^7.4"
+black = "^23.9"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
