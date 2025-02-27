@@ -1,0 +1,11 @@
+
+services:
+  api:
+    build: .
+    container_name: fastapi_g1
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      - MODEL_PATH=models/content_model.pkl

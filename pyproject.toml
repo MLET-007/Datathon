@@ -10,13 +10,13 @@ package-mode = false  # Desabilita instalação do projeto como pacote (opcional
 
 [tool.poetry.dependencies]
 python = "^3.10"
-flask = "^2.3"
+fastapi = "^0.103"
 pandas = "^2.0"
 numpy = "^1.24"
 scikit-learn = "^1.2"
 uvicorn = "^0.22"
 gunicorn = "^20.1"
-pyarrow = "^12.0"  
+pyarrow = "^12.0"
 
 [poetry.group.dev.dependencies]
 pytest = "^7.4"
