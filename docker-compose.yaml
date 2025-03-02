@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  # db:
+  #   image: postgres:15-alpine
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data/
+  #   ports:
+  #     - 5434:5432
+  #   environment:
+  #     - POSTGRES_DB=embrapa
+  #     - POSTGRES_USER=aleatorio
+  #     - POSTGRES_PASSWORD=heyjoletsgo
+  #   networks:
+  #     - docker_compose
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready", "-d", "embrapa"]
+  #     timeout: 5s
+  #     retries: 10
+  app:
+    image: datathon-app
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 8009:80
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+volumes:
+  postgres_data:
+
+networks:
+  docker_compose:

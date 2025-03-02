@@ -1,0 +1,51 @@
+[tool.poetry]
+name = "datathon"
+version = "0.1.0"
+description = ""
+authors = ["email dos alunos - MLE"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.110.0"
+uvicorn = "^0.29.0"
+sqlalchemy = "^2.0.29"
+pandas = "^2.2.1"
+aiosqlite = "^0.20.0"
+greenlet = "^3.0.3"
+unidecode = "^1.3.8"
+mkdocs = "1.5.3"
+mkdocs-material = "9.5.17"
+mkdocstrings = {extras = ["python"], version = "^0.24.3"}
+passlib = "^1.7.4"
+pydantic-settings = "^2.2.1"
+alembic = "^1.13.1"
+psycopg2-binary = "^2.9.9"
+bcrypt = "^4.1.3"
+python-jose = "^3.3.0"
+python-multipart = "^0.0.9"
+
+[tool.poetry.group.dev.dependencies]
+isort = "^5.13.2"
+taskipy = "^1.12.2"
+blue = "^0.9.1"
+httpx = "^0.27.0"
+
+[tool.isort]
+profile = "black"
+line_length = 79
+extend_skip = ['migrations']
+
+[tool.pytest.ini_options]
+pythonpath = "."
+
+[tool.blue]
+extend-exclude = '(migrations/)'
+
+[tool.taskipy.tasks]
+format = 'blue .  && isort .'
+run = 'uvicorn embrapa.app:app --reload'
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
