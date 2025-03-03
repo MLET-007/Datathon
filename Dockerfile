@@ -1,15 +1,11 @@
-FROM python:3.11-slim
-ENV POETRY_VIRTUALENVS_CREATE=false
 
-WORKDIR app/
+FROM python:3.8-slim
+
+WORKDIR /app
+
+COPY pyproject.toml poetry.lock ./
+RUN pip install poetry && poetry config virtualenvs.create false && poetry install --no-dev
+
 COPY . .
 
-
-RUN pip install poetry
-
-RUN poetry config installer.max-workers 10
-RUN poetry install --no-interaction --no-ansi
-
-EXPOSE 8009
-
-CMD ["poetry", "run", "uvicorn", "datathon.app:app", "--host", "0.0.0.0", "--port", "8009"]
+CMD ["uvicorn", "app.app:app", "--host", "0.0.0.0", "--port", "8000"]
