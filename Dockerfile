@@ -1,11 +1,16 @@
 
-FROM python:3.8-slim
+FROM python:3.11-slim
 
 WORKDIR /app
 
 COPY pyproject.toml poetry.lock ./
-RUN pip install poetry && poetry config virtualenvs.create false && poetry install --no-dev
+# RUN pip install poetry && poetry config virtualenvs.create false && poetry install --no-dev
 
 COPY . .
 
-CMD ["uvicorn", "app.app:app", "--host", "0.0.0.0", "--port", "8000"]
+RUN pip install poetry
+
+RUN poetry config installer.max-workers 10
+RUN poetry install --no-interaction --no-ansi
+
+EXPOSE 8009

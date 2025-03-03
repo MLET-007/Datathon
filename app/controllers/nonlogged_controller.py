@@ -19,7 +19,6 @@ def get_nonlogged_recommendations(noticia_id: str = None, top_n: int = 5):
     
     # Gerar recomendações
     recommended_ids = recomendar_noticias_non_logged_svd(noticia_id, svd, item_factors, indices_noticias, top_n)
-    
     # Mapear IDs para detalhes
     recommendations = []
     for rec_id in recommended_ids:

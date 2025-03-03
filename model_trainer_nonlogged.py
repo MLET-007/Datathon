@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PARQUET_DIR = os.path.join(BASE_DIR, "parquet_files")
-MODEL_DIR = os.path.join(BASE_DIR, "/app/model")
+MODEL_DIR = os.path.join(BASE_DIR, "model")
 os.makedirs(MODEL_DIR, exist_ok=True)
 
 def tratamento_treino(df_treino, df_vali, df_itens, user_type):
@@ -133,13 +133,13 @@ def treinar_modelo_nonlogged(df_treino, df_validacao, df_itens):
         raise
     
 ##descomentar para executar direto 
-# if __name__ == "__main__":
-#     logger.info("Iniciando leitura do treino .parquet")
-#     df_treino = pd.read_parquet(os.path.join(PARQUET_DIR, "treino_final.parquet"))
-#     logger.info("Iniciando leitura do validacao .parquet")
-#     df_validacao = pd.read_csv(os.path.join(BASE_DIR, "files_csv", "validacao.csv"))
-#     logger.info("Iniciando leitura de validacao .parquet")
-#     df_itens = pd.read_parquet(os.path.join(PARQUET_DIR, "itens_finalv2.parquet"))
-#     logger.info("Iniciando treinamento do modelo não logado")
-#     treinar_modelo_nonlogged(df_treino, df_validacao, df_itens)    
-#     logger.info("Finalizado treinamento") 
+if __name__ == "__main__":
+    logger.info("Iniciando leitura do treino .parquet")
+    df_treino = pd.read_parquet(os.path.join(PARQUET_DIR, "treino_final.parquet"))
+    logger.info("Iniciando leitura do validacao .parquet")
+    df_validacao = pd.read_csv(os.path.join(BASE_DIR, "files_csv", "validacao.csv"))
+    logger.info("Iniciando leitura de validacao .parquet")
+    df_itens = pd.read_parquet(os.path.join(PARQUET_DIR, "itens_finalv2.parquet"))
+    logger.info("Iniciando treinamento do modelo não logado")
+    treinar_modelo_nonlogged(df_treino, df_validacao, df_itens)    
+    logger.info("Finalizado treinamento") 
